@@ -1,0 +1,857 @@
+<html>
+
+<head>
+<style>
+body {
+    counter-reset: h1counter;
+}
+h1 {
+    counter-reset: h2counter;
+}
+h2 {
+    counter-reset: h3counter;
+}
+h2:before {
+    content: counter(h2counter) ".\0000a0\0000a0";
+    counter-increment: h2counter;
+}
+h3:before {
+    content: counter(h2counter) "." counter(h3counter) ".\0000a0\0000a0";
+    counter-increment: h3counter;
+}
+pre {
+    white-space:pre-line;
+    border:1px solid lightgrey;
+    color:blue;
+    margin: 1em;
+    white-space: pre;
+}
+span.code {
+    font-family: courier;
+    font-size: 18;
+    font-weight: bold;
+}
+</style>
+<head>
+
+<body>
+<h1>The Bookmarks Tutorial</h1>
+<h2><a name="1">Introduction</h2>
+Bookmarks is a bash utility to remember directory and file locations.<br><br>
+Features include
+<ul>
+<li>Add comments for each bookmark</li>
+<li>Groups and sub-groups for categorizing bookmarks</li>
+<li>Multiple linked bookmark files</li>
+<li>Derived names - bookmark a log file containing today's date</li>
+<li>Shareable with other users</li>
+<li>Fully searchable; search all linked bookmarks files</li>
+</ul>
+
+<h2><a name="2">Install and Set-up</h2>
+<h3>Prerequisites</h3>
+bash v3 or greater
+
+
+<h3>Install</h3>
+Copy file <span class="code">bm.env</span> to appropriate location.<br>
+For the purposes of this tutorial, <span class="code">bm.env</span> is located in <span class="code">/home/eduardo</span><br>
+For a more permanent location, use <span class="code">/usr/local/share</span>
+
+ 
+<h3>Initialize</h3>
+At the bash prompt, type &quot;<span class="code">. /home/eduardo/bm.env init</span>&quot;
+<pre>
+eduardo@doxology:~ (0)
+$ . /home/eduardo/bm.env init
+Bookmarks v0.1 initialized
+Type 'bm help' for help
+eduardo@doxology:~ (0)
+$
+</pre><br>
+
+This creates the bash shell functions <span class="code">bm</span> and <span class="code">bma</span>; these functions are used to manage your bookmarks.
+<br><br>
+To automatically enable bookmarks each time you start bash, add <span class="code">. /home/eduardo/bm.env init</span> to your <span class="code">.bashrc</span> file.
+ 
+<h3>Environment</h3>
+
+<dl>
+	<dt><span class="code">$BMLOC</span></dt>
+<dd>Tracks your current bookmark file and group<br>
+If not set, <span class="code">~/.bookmark</span> is used.</dd>
+
+<dt><span class="code">/home/eduardo/bm.env</span></dt>
+<dd>The bookmarks code</dd>
+
+<dt><span class="code">~/.bookmark</span></dt>
+<dd>The default bookmarks file. Override using <span class="code">$BMLOC</span></dd>
+
+<dt><span class="code">~/.bookmark.cfg</span></dt>
+<dd>Optional config file. Overrides default bookmark settings</dd>
+<dt><span class="code">bm</span></dt>
+<dd>bash function; interfaces to <span class="code">bm.env</span></dd>
+<dt><span class="code">bma</span></dt>
+<dd>bash function; add items and groups</dd>
+</dl>
+
+ 
+<h3>Uninstall</h3>
+If bookmarks do not meet your needs, here are the steps to remove bookmarks from your system
+<ol>
+  <li>Remove file <span class="code">bm.env</span></li>
+  <li>Remove any reference to <span class="code">bm.env</span> from <span class="code">.bash_profile</span>, <span class="code">.profile</span>, <span class="code">.bashrc</span> etc</li>
+  <li>Remove <span class="code">~/.bookmark</span></li>
+  <li>Remove <span class="code">~/.bookmark.cfg</span></li>
+</ol>
+
+ 
+<h2><a name="3">Bookmark a Directory</h2>
+	Change to a directory you want to remember, and type <span class="code">bma</span>:
+<pre>
+eduardo@doxology:~ (0)
+$ cd /etc/init.d
+eduardo@doxology:/etc/init.d (0)
+$ bma
+</pre><br>
+Alternatively, you can name the directory (using absolute or relative path):
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bma /usr/local/share
+</pre><br>
+
+
+To view your bookmarks, type <span class="code">bm</span>:
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bm
+-----------------------
+/home/eduardo/.bookmark
+-----------------------
+  1. /etc/init.d/
+  2. /usr/local/share/
+
+['help' for more info]
+Item:2
+eduardo@doxology:/usr/local/share (0)
+$ 
+</pre><br>
+
+The header shows the location of the current bookmark file.<br><br>
+
+A trailing slash differentiates directories from files.<br><br>
+
+When item <span class="code">2</span> is picked, you are returned to the directory <span class="code">/usr/local/share</span><br><br>
+
+You can also pick the item as a parameter:
+<pre>
+eduardo@doxology:/usr/local/share (0)
+$ bm 1
+eduardo@doxology:/etc/init.d (0)
+$ 
+</pre><br>
+
+ 
+<h2><a name="4">Bookmark a File</h2>
+In <span class="code">/etc/init.d</span> we can bookmark <span class="code">/etc/rc.local</span> using a relative path
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bm ../rc.local
+</pre><br>
+
+
+To bookmark a file in the current directory, simply name the file
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bma cron
+</pre><br>
+
+
+You can also use absolute path to bookmark a file
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bma /etc/hosts
+</pre><br>
+
+
+
+
+View the bookmarks file again:
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bm
+-----------------------
+/home/eduardo/.bookmark
+-----------------------
+  1. /etc/init.d/
+  2. /usr/local/share/
+  3. /etc/rc.local
+  4. /etc/init.d/cron
+  5. /etc/hosts
+
+['help' for more info]
+Item:
+</pre><br>
+
+When item 5 is picked, the file <span class="code">/etc/hosts</span> is opened using the default editor for
+bookmarks, which is <span class="code">vi</span>.<br>
+To change this to another editor, see <a href="#15">section 15</a>
+ 
+
+<h2><a name="5">Create a bookmark group</h2>
+Once many items are bookmarked, the bookmarks file can get unwieldy.<br>
+When this happens, bookmarks can be categorised into groups.<br><br>
+
+To add a group called <span class="code">bootup</span>, use <span class="code">bma</span> as follows:
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bma group bootup
+Group bootup added
+</pre><br>
+ 
+Now, when you type <span class="code">bm</span> you get the following:
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bm
+--------------------------------
+/home/eduardo/.bookmark (bootup)
+--------------------------------
+ g1.  group= 
+ g2. (group=bootup)
+
+['help' for more info]
+Item:
+</pre><br>
+
+To navigate, use the items prefixed with "g". The group list shows you
+<ol type="a">
+<li>each group from the root group to the current group</li>
+<li>the current group</li>
+<li>each available group one level below this</li>
+</ol>
+
+
+You can also add a group within a group:
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bma group network
+Group bootup:network added
+
+eduardo@doxology:/etc/init.d (0)
+$ bm
+----------------------------------------
+/home/eduardo/.bookmark (bootup:network)
+----------------------------------------
+ g1.  group= 
+ g2.  group=bootup 
+ g3. (group=bootup:network)
+
+['help' for more info]
+Item:
+</pre><br>
+
+When you return to the prompt, your group location is preserved in the environment variable <span class="code">$BMLOC</span>
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ echo $BMLOC
+bootup!network@/home/eduardo/.bookmark
+</pre><br>
+
+
+<h2><a name="6">Edit bookmarks file</h2>
+To edit the bookmarks file, type <span class="code">edit</span>
+<pre>
+----------------------------------------
+/home/eduardo/.bookmark (bootup:network)
+----------------------------------------
+ g1.  group= 
+ g2.  group=bootup 
+ g3. (group=bootup:network)
+
+['help' for more info]
+Item:edit
+</pre><br>
+
+The current bookmarks file is opened using the default bookmarks editor, which is <span class="code">vi</span>.<br>
+To change the bookmarks editor, see <a href="#15">section 15</a>
+
+<h2><a name="7">Display formatting</h2>
+There are two commands you can use in the bookmarks file to document the bookmarks.
+<dl>
+<dt><span class="code">print</span></dt>
+<dd>Print a line of text</dd>
+<dt><span class="code">head</span></dt>
+<dd>Print a blank line followed by a line of text</dd>
+</dl>
+
+Example bookmarks file with <span class="code">print</span> and <span class="code">head</span> commands added
+<pre>
+/etc/init.d
+print The location of bm.env
+/usr/local/share
+/etc/rc.local
+head cron service script
+/etc/init.d/cron
+/etc/hosts
+
+
+rem ----------
+==group bootup
+rem ----------
+==end-group bootup
+
+
+rem ------------------
+==group bootup:network
+rem ------------------
+==end-group bootup:network
+</pre><br>
+
+When viewed
+<pre>
+-----------------------
+/home/eduardo/.bookmark
+-----------------------
+ g1. (group=)
+ g2.  group=bootup 
+
+  1. /etc/init.d/
+The location of bm.env
+  2. /usr/local/share/
+  3. /etc/rc.local
+
+cron service script
+  4. /etc/init.d/cron
+  5. /etc/hosts
+
+['help' for more info]
+Item:
+</pre><br>
+
+
+<h2><a name="8">Run command</h2>
+You can execute a command using bookmarks.<br>
+This feature is disabled by default, but can be enabled by typing <span class="code">config</span> and setting the flag for <span class="code">enable_run</span> to <span class="code">Y</span>.<br>
+<pre>
+-----------------------
+/home/eduardo/.bookmark
+-----------------------
+ g1. (group=)
+ g2.  group=bootup 
+
+  1. /etc/init.d/
+The location of bm.env
+  2. /usr/local/share/
+  3. /etc/rc.local
+
+cron service script
+  4. /etc/init.d/cron
+  5. /etc/hosts
+
+['help' for more info]
+Item:config
+</pre><br>
+Change <span class="code">enable_run</span> to <span class="code">Y</span>
+<pre>
+enable_clear=Y
+editor=vi
+enable_run=Y
+</pre><br>
+
+Next, add an item to run. The following will be added as an example<br>
+<pre>
+run ls -lrt /tmp
+</pre><br>
+
+Edit the bookmarks file and add the line above after <span class="code">/etc/hosts</span>
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bm edit
+</pre><br>
+<pre>
+/etc/init.d
+print The location of bm.env
+/usr/local/share
+/etc/rc.local
+head cron service script
+/etc/init.d/cron
+/etc/hosts
+run ls -lrt /tmp
+
+
+rem ----------
+==group bootup
+rem ----------
+==end-group bootup
+
+
+rem ------------------
+==group bootup:network
+rem ------------------
+==end-group bootup:network
+</pre><br>
+
+Now pick the new item
+<pre>
+eduardo@doxology:/etc/init.d (0)
+$ bm
+-----------------------
+/home/eduardo/.bookmark
+-----------------------
+ g1. (group=)
+ g2.  group=bootup 
+
+  1. /etc/init.d/
+The location of bm.env
+  2. /usr/local/share/
+  3. /etc/rc.local
+
+cron service script
+  4. /etc/init.d/cron
+  5. /etc/hosts
+  6. run ls -lrt /tmp
+
+['help' for more info]
+Item:6
+------------------------------
+ls -lrt /tmp
+total 24
+drwx------ 2 eduardo eduardo 4096 Jan  1  1970 orbit-eduardo
+drwx------ 2 lucia   lucia   4096 Jan  1  1970 orbit-lucia
+drwx------ 2 root    root    4096 Apr  1 08:32 pulse-PKdhtXMmr18n
+drwx------ 2 eduardo eduardo 4096 Apr  1 20:03 ssh-lomVYaQRBRne
+drwx------ 2 eduardo eduardo 4096 Apr  1 20:03 keyring-nD3Np9
+drwxrwxrwx 2 lucia   lucia   4096 Apr  1 20:04 mintUpdate
+------------------------------
+$?=0
+Press Return to continue
+</pre><br>
+
+
+<h2><a name="9">Other item commands</h2>
+<h3>Navigate to item's directory</h3>
+You can navigate to the directory containing an item using the <span class="code">dir</span> command:
+<pre>
+-----------------------
+/home/eduardo/.bookmark
+-----------------------
+ g1. (group=)
+ g2.  group=bootup 
+
+  1. /etc/init.d/
+The location of bm.env
+  2. /usr/local/share/
+  3. /etc/rc.local
+
+cron service script
+  4. /etc/init.d/cron
+  5. /etc/hosts
+  6. run ls -lrt /tmp
+
+['help' for more info]
+Item:dir 5
+eduardo@doxology:/etc (0)
+$ 
+</pre><br>
+
+<h3>Select multiple items</h3>
+Multiple file entries can be selected to be viewed sequentially
+<pre>
+-------------------------------
+/home/eduardo/.example_bookmark
+-------------------------------
+  1. /home/eduardo/file_A.txt
+  2. /home/eduardo/file_B.txt
+  3. /home/eduardo/file_C.txt
+  4. /home/eduardo/file_D.txt
+  5. /home/eduardo/file_E.txt
+['help' for more info]
+Item:
+</pre><br>
+To select all five items, the following are equivalent
+<pre>
+Item:1 2 3 4 5
+Item:1-5
+Item:1-3 4 5
+</pre>
+Note that if you include a directory or run command in a multiple selection, it is ignored.
+<br>
+
+<h3>Return to top-level</h3>
+You can return to the top-level group of the top-level bookmark file using the <span class="code">root</span> command
+<pre>
+----------------------------------------
+/home/eduardo/.bookmark (bootup:network)
+----------------------------------------
+ g1.  group= 
+ g2.  group=bootup 
+ g3. (group=bootup:network)
+
+['help' for more info]
+Item:root
+-----------------------
+/home/eduardo/.bookmark
+-----------------------
+ g1. (group=)
+ g2.  group=bootup 
+
+  1. /etc/init.d/
+The location of bm.env
+  2. /usr/local/share/
+  3. /etc/rc.local
+
+cron service script
+  4. /etc/init.d/cron
+  5. /etc/hosts
+  6. run ls -lrt /tmp
+
+['help' for more info]
+Item:
+</pre><br>
+
+
+
+<h2><a name="10">Referencing another bookmark file</h2>
+Use command <span class="code">bmloc</span> to add a link to another bookmark file.
+<pre>
+-------------------------------
+/home/eduardo/.example_bookmark
+-------------------------------
+  1. /home/eduardo/file_A.txt
+  2. /home/eduardo/file_B.txt
+  3. /home/eduardo/file_C.txt
+  4. /home/eduardo/file_D.txt
+  5. /home/eduardo/file_E.txt
+  6. bmloc /home/eduardo/.another_bookmark_file
+['help' for more info]
+Item:6
+------------------------------------
+/home/eduardo/.another_bookmark_file
+------------------------------------
+ g1. (group=)
+ g2.  group=var
+
+  1. /home/eduardo/debug.out
+
+  2. Return to previous bookmark file /home/eduardo/.example_bookmark
+
+['help' for more info]
+Item:
+
+</pre><br>
+If you return to the prompt and restart bookmarks, you will retain your current bookmark state
+<pre>
+------------------------------------
+/home/eduardo/.another_bookmark_file
+------------------------------------
+ g1. (group=)
+ g2.  group=var
+
+  1. /home/eduardo/debug.out
+
+  2. Return to previous bookmark file /home/eduardo/.example_bookmark
+
+['help' for more info]
+Item:
+
+</pre><br>
+
+
+
+ 
+
+<h2><a name="11">Make group hidden</h2>
+	If you have groups you no longer want displayed but do not wish to delete, the convention is to prefix the group name with <span class="code">hidden:</span><br>
+The contents of the group will still be searchable.<br>
+An alternative is to copy the contents to another bookmarks file<br>
+
+ 
+
+<h2><a name="12">Finding items</h2>
+You can find items using by prefixing search string with <span class="code">/</span>.<br>
+This can be done from command line or in bookmark menu.<br>
+All items and group names are searched, and all bookmark files linked with <span class="code">bmloc</span> are also searched.<br>
+<pre>
+eduardo@doxology:~ (0)
+$ bm /hello
+-------------------------------
+/home/eduardo/.example_bookmark
+-------------------------------
+ g1.  group=/home/eduardo/.demo_bookmark#var:www
+
+  1. [/home/eduardo/.demo_bookmark#var:www] /var/www/cgi-bin/hello2.pl
+  2. [/home/eduardo/.demo_bookmark#var:www] /var/www/cgi-bin/hello.pl
+
+['help' for more info]
+Item:
+</pre>
+The results above show us there are two matches in one group within the bookmark file <span class="code">/home/eduardo/.demo_bookmark</span><br>
+If you choose item <span class="code">g1</span>, the bookmark file <span class="code">/home/eduardo/.demo_bookmark</span> is opened in group <span class="code">var:www</span><br>
+If you choose item <span class="code">1</span> or <span class="code">2</span>, the file is opened using the defined editor.<br>
+
+<h2><a name="13">Redirect output</h2>
+When output is redirected, picked items are instead sent to stdout.  Note that both directories and files items are output during redirection.
+<pre>
+$ bm 1-5 |cat
+/etc/init.d/
+/usr/local/share/
+/etc/rc.local
+/etc/init.d/cron
+/etc/hosts
+eduardo@doxology:/etc (0)
+$ 
+</pre><br>
+
+Any spaces in the pathname are replaced with <span class="code">[[.space.]]</span> when redirected.
+<pre>
+$ bm 12 |cat
+/home/eduardo/some[[.space.]]file.txt
+</pre>
+
+This allows effective command substitution for filenames containing spaces and other unusual characters
+<pre>
+$ md5sum $(bm 12)
+2d01d5d9c24034d54fe4fba0ede5182d  /home/eduardo/some file.txt
+</pre>
+
+
+If you do not want the space substitution to occur, prefix the item or items with <span class="code">raw</span>
+<pre>
+$ bm raw 12 |cat
+/home/eduardo/some file.txt
+</pre>
+
+ 
+<h2><a name="14">Help</h2>
+Use <span class="code">bm help</span> to list the standard bookmark options
+<pre>
+eduardo@doxology:~ (0)
+$ bm help
+
+  Environment:
+    Bash Version 4.1.2(1)-release
+    BMLOC="/home/eduardo/.bookmark"
+    |BMLOC defaults to ~/.bookmark if not set
+
+  Command line:
+    bm                  : show current group bookmarks and pick item
+    bma                 : add current directory to bookmarks
+    bma file            : add full path of file to bookmarks
+    bma dir             : add full path of dir to bookmarks
+    bma *.txt           : add files matching *.txt to bookmarks
+    bma group eg1       : create group "eg1" (within current group)
+    |group name cannot contain the following 3 characters ":@!"
+
+  Item:
+    1			: select item 1; edit, cd or set group accordingly
+    1-10		: edit all files within items 1-10
+    dir 2		: cd to directory containing item 2
+    raw 3               : when stdout redirected, list item 3 without replacing spaces with [[.space.]]
+    root		: set to root group and display
+    /str		: list items matching "str" in all group sections
+    /group		: list all group sections
+    edit		: edit bookmarks file
+    config              : edit config (~/.bookmark.cfg)
+    |item can be parameter eg "bm 1-5", "bm raw 3", "bm /myfile", "bm edit"
+    |if stdout redirected, filenames are output eg "bm >files.txt"
+
+  Bookmark file:
+    rem                 : ignore line
+    print text          : print text
+    head text           : print section heading
+    run command         : execute command when selected
+    bmloc filename      : open bookmark file filename when selected
+    ==group eg1         : start of group "eg1" block
+    ==end-group eg1     : end of group "eg1" block
+    |directives must start on first character of line
+    |bookmark may be specified as wildcard eg "/full/path/*.txt"
+
+</pre><br>
+ 
+
+<h2><a name="15">bookmark.cfg settings</h2>
+To edit config, use <span class="code">config</span> command
+<pre>
+-----------------------
+/home/eduardo/.bookmark
+-----------------------
+ g1. (group=)
+ g2.  group=bootup 
+
+  1. /etc/init.d/
+The location of bm.env
+  2. /usr/local/share/
+  3. /etc/rc.local
+
+cron service script
+  4. /etc/init.d/cron
+  5. /etc/hosts
+
+['help' for more info]
+Item:config
+</pre>
+<pre>
+enable_clear=Y
+editor=vi
+enable_run=Y
+</pre>
+
+There are three standard attributes
+
+<dl>
+<dt><span class="code">enable_clear</span></dt>
+<dd>turn on and off clear screen within bookmarks</dd>
+<dt><span class="code">editor</span></dt>
+<dd>editor to use. Defaults to <span class="code">vi</span></dd>
+<dt><span class="code">enable_run</span></dt>
+<dd>enable/disable run command</dd>
+</dl>
+
+One optional attribute is currently available
+
+<dl>
+<dt><span class="code">basedir.IDENTITY</span></dt>
+<dd>path prefix substitution for bookmarks. See <a href="#17">section 17</a> for details</dd>
+</dl>
+
+
+<h2><a name="16">Bookmark variables</h2>
+You can define variables and use these in bookmark files.<br>
+A defined variable is referenced using <span class="code">%{var}</span>, where <span class="code">var</span> is the variable.<br>
+
+You cannot reference environment variables directly using <span class="code">$var</span>.<br>
+
+In the bookmarks file, the following advanced commands are available
+<dl>
+<h3><span class="code">set var=value</span></h3>
+Assign value to <span class="code">var</span>
+<pre>
+set currenv=/data/unit_test
+</pre>
+
+<h3><span class="code">read var from env</span></h3>
+Read variable <span class="code">var</span> from current environment
+<pre>
+read LOGNAME from env
+read mylogname from env LOGNAME
+</pre>
+
+<h3><span class="code">read var from file /full/path/to/file</span></h3>
+Read value from first line of file
+<pre>
+read batch_date from %{currenv}/today.dat
+</pre>
+
+<h3><span class="code">read var from file /full/path/to/file using prefix_token</span></h3>
+Read value from file where line matches <span class="code">prefix_token</span>
+<pre>
+read batch_date from %{currenv}/runvars.cfg using today=
+</pre>
+
+<h3><span class="code">read var from date +date_format</span></h3>
+Read current date into <span class="code">var</span> using date format
+<pre>
+read today_var from date +%Y%m%d
+</pre>
+
+<h3><span class="code">read var from date +date_format specified_date</span></h3>
+Read current date into <span class="code">var</span> using date format for specified date<br>
+(this will only work on systems that support <span class="code">date --date</span> option)
+<pre>
+read yesterday_var from date +%Y%m%d yesterday
+</pre>
+
+<h3><span class="code">read var from [first|last] glob /full/path/to/file</span></h3>
+Expands glob pattern and reads first/last item
+<pre>
+read last_run from last glob %{currenv}/logs/??????/upload-????-??-??.log
+</pre>
+
+<h3><span class="code">show vars</span></h3>
+Dump all defined bookmark variables. This will include <span class="code">config</span> and internal variables.
+<pre>
+show vars
+</pre>
+
+
+<h3>global vs local scope</h3>
+If a variable is defined at root-level, it is global, so visible in all groups.<br>
+If a variable is defined within a group, it overrides a global variable with the same name.<br>
+Each group's variables are private - there is no inheritance from a group to a sub-group<br>
+
+<h3>Referencing config variables</h3>
+Config variable are prefixed with <span class="code">config.</span> but are referenced in the same way as other variables.
+<pre>
+print The current editor is %{config.editor}
+</pre>
+
+
+<h3>Read value as current bookmark line</h3>
+If the special variable <span class="code">.</span> is assigned, the value is immediately output.<br>
+<pre>
+read . from last glob %{currenv}/logs/??????/upload-????-??-??.log
+</pre>
+is equivalent to
+<pre>
+read last_run from last glob %{currenv}/logs/??????/upload-????-??-??.log
+%{last_run}
+</pre>
+
+ 
+<h2><a name="17">Referencing bookmarks on shared drive from different machines</h2>
+If a bookmark file is stored on a shared drive and referenced by two machines with different base paths for the mount point, you can set a config item to manage this.<br>
+The following example illustrates how this feature may be used. The machine names are <span class="code">doxology</span> and <span class="code">talisker</span><br><br>
+
+First, set the variable <span class="code">current.identity</span> in the bookmark file to identify it<br/><br/>
+<span class="code">doxology:/home/eduardo/nas02_eduardo/.bookmark</span>
+<pre>
+set current.identity=nas02
+</pre>
+
+On <span class="code">doxology</span>, add the following entry to the config file<br/><br/>
+<span class="code">doxology:/home/eduardo/.bookmark.cfg</span>
+<pre>
+basedir.nas02=/home/eduardo/nas02_eduardo
+</pre>
+
+On <span class="code">talisker</span>, add the following entry to the config file<br/><br/>
+<span class="code">talisker:/usr/eduardo/.bookmark.cfg</span>
+<pre>
+basedir.nas02=/usr/eduardo/nas02
+</pre>
+
+When a bookmark that matches <span class="code">basedir.nas02</span> prefix is added, the basedir prefix is replaced with <span class="code">%{config.basedir.nas02}</span><br>
+This ensures the path resolves correctly on both machines.<br><br>
+
+For example, if on <span class="code">doxology</span> we add the following file
+<pre>
+eduardo@doxology:~ (0)
+$ bma /home/eduardo/nas02_eduardo/todo.txt
+</pre>
+
+This will be stored in the bookmark file as
+<pre>
+%{config.basedir.nas02}/todo.txt
+</pre>
+
+If we then access this bookmark from <span class="code">talisker</span>, this bookmark will be resolved to
+<pre>
+/usr/eduardo/nas02/todo.txt
+</pre>
+
+<h2><a name="18">Shareable bookmarks</h2>
+If users require to share bookmarks, it is recommended to set up a separate location for this rather than sharing bookmarks from the user's home directory.<br/>
+A commonly used option is to create the directory <span class="code">/etc/bookmark</span> (owned by root), and create a user-owned directory for each user within this.<br/>
+Each user can now create and share bookmarks safely.</br>
+The following example shows the shared bookmark directory for users <span class="code">eduardo</span> and <span class="code">lucia</span>
+<pre>
+eduardo@doxology:~ (0)
+$ find /etc/bookmark -printf "%u:%g %p\n"
+root:root /etc/bookmark
+eduardo:eduardo /etc/bookmark/eduardo
+eduardo:eduardo /etc/bookmark/eduardo/shared_bookmark
+lucia:lucia /etc/bookmark/lucia
+lucia:lucia /etc/bookmark/lucia/shared_bookmark
+</pre>
+</body>
+</html>
