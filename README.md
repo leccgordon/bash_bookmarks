@@ -1,4 +1,4 @@
-# The Bookmarks Tutorial
+# Bookmarks Tutorial
 ## Introduction
 Bookmarks is a bash utility to remember directory and file locations.
 
@@ -130,6 +130,76 @@ View the bookmarks file again:
 
 When item 5 is picked, the file /etc/hosts is opened using the default editor for bookmarks, which is vi.
 To change this to another editor, see bookmark.cfg settings
+
+## Create a bookmark group
+Once many items are bookmarked, the bookmarks file can get unwieldy.
+When this happens, bookmarks can be categorised into groups.
+
+To add a group called `bootup` use `bma` as follows:
+
+    eduardo@doxology:/etc/init.d (0)
+    $ bma group bootup
+    Group bootup added
+    
+
+Now, when you type `bm` you get the following:
+
+    eduardo@doxology:/etc/init.d (0)
+    $ bm
+    --------------------------------
+    /home/eduardo/.bookmark (bootup)
+    --------------------------------
+     g1.  group= 
+     g2. (group=bootup)
+     
+     ['help' for more info]
+     Item:
+     
+To navigate, use the items prefixed with "g". The group list shows you
+1. each group from the root group to the current group
+1. the current group
+1. each available group one level below this
+
+You can also add a group within a group:
+
+    eduardo@doxology:/etc/init.d (0)
+    $ bma group network
+    Group bootup:network added
+    
+    eduardo@doxology:/etc/init.d (0)
+    $ bm
+    ----------------------------------------
+    /home/eduardo/.bookmark (bootup:network)
+    ----------------------------------------
+     g1.  group= 
+     g2.  group=bootup
+     g3. (group=bootup:network)
+    
+    ['help' for more info]
+    Item:
+
+
+When you return to the prompt, your group location is preserved in the environment variable `$BMLOC`
+
+    eduardo@doxology:/etc/init.d (0)
+    $ echo $BMLOC
+    bootup!network@/home/eduardo/.bookmark
+    
+## Edit bookmarks file
+To edit the bookmarks file, type `edit`
+
+    ----------------------------------------
+    /home/eduardo/.bookmark (bootup:network)
+    ----------------------------------------
+     g1.  group= 
+     g2.  group=bootup
+     g3. (group=bootup:network)
+     
+    ['help' for more info]
+    Item:edit
+    
+The current bookmarks file is opened using the default bookmarks editor, which is `vi`.
+To change the bookmarks editor, see bookmark.cfg settings
 
 ## Display formatting
 There are two commands you can use in the bookmarks file to document the bookmarks.
